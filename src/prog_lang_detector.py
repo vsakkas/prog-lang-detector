@@ -31,6 +31,24 @@ def load_pickle(file_name):
 
 
 def load_dataset(dataset_dir):
+    """
+    Return the dataset as a pandas Dataframe.
+    Parameters
+    ----------
+    dataset_dir : string
+        The relative path of the dataset to load. Must be an existing directory and it must end with '/'.
+    Returns
+    -------
+    Dataframe
+        Contains two columns named 'Source' and 'Label'
+    Notes
+    -------
+    Strips all alphanumerics that are not keywords.
+
+    The files within the dataset folder must be inside directories, one per language.
+
+    If 'dataset.pkl' already exists, then will load it's content and return that instead.
+    """
     print('Loading dataset...')
     df = pd.DataFrame({'Source': [], 'Label': []})
     if os.path.exists(dataset_pkl):
@@ -58,14 +76,27 @@ def load_dataset(dataset_dir):
     return df
 
 
-def split_dataset(df):
-    print('Splitting dataset into train and test sets...')
-    train, test = train_test_split(df, test_size=0.2, shuffle=False)
-
-    return train, test
-
-
 def reduce_dimension(train_df, test_df):
+    """
+    Convert the train test dataframe to sparse matrixes, then reduce their dimensions by keeping the
+    most relevant/useful features.
+    Parameters
+    ----------
+    train_df : Dataframe
+
+    test_df : Dataframe
+    Returns
+    -------
+    array, array
+        First array contains the features of the train dataset, second array of the test dataset.
+    Notes
+    -------
+    If 'train.pkl' and 'test.pkl' already exist, then will load their content and return those instead.
+
+    If 'tfidf.pkl' exists, then will load it and use that instead of fitting a new one.
+
+    If 'nmf.pkl' exists, then will load it and use that instead of fitting a new one.
+    """
     if os.path.exists(train_pkl) and os.path.exists(test_pkl):
         print('Loading truncated matrix...')
         x_train = load_pickle(train_pkl)
@@ -103,6 +134,20 @@ def reduce_dimension(train_df, test_df):
 
 
 def train_classifier(x_train, labels):
+    """
+    Use the train data and the provided labels to train the RandomForestClassifier.
+    Parameters
+    ----------
+    x_train : array
+
+    labels : list (of strings)
+    Returns
+    -------
+    RandomForestClassifier
+    Notes
+    -------
+    If 'classifier.pkl' exists, then will load it and use that instead of training a new classifier.
+    """
     if os.path.exists(classifier_pkl):
         print('Loading classifier...')
         clf = load_pickle(classifier_pkl)
@@ -114,25 +159,54 @@ def train_classifier(x_train, labels):
     return clf
 
 
-def benchmark_classifier(cls, y_test, test_df, scoring):
+def benchmark_classifier(cls, y_test, labels, scoring):
+    """
+    Use 10-fold cross validation to benchmark the performance of the provided classifier.
+    Parameters
+    ----------
+    cls : estimator object implementing 'fit'
+
+    y_test : array
+
+    labels : list (of strings)
+        List containing the labels that match the elements of 'y_test'.
+
+    scoring : list (of strings)
+    """
     print('Calculating classifier performance...')
     for scr in scoring:
-        print(scr, ':', str(np.mean(cross_val_score(cls, y_test, test_df['Label'], cv=10, scoring=scr))))
+        print(scr, ':', str(np.mean(cross_val_score(cls, y_test, labels, cv=10, scoring=scr))))
 
 
 def train(dataset_dir):
+    """
+    Use provided dataset to train a classifier and calculate it's performance. Creates pickle files to
+    store the intermediate results along with the trained classifier.
+    Parameters
+    ----------
+    dataset_dir : string
+        The relative path of the dataset to load. Must be an existing directory and it must end with '/'.
+    """
     df = load_dataset(dataset_dir)
 
-    train_df, test_df = split_dataset(df)
+    train_df, test_df = train_test_split(df, test_size=0.2, shuffle=False)
 
     x_train, y_test = reduce_dimension(train_df, test_df)
 
     clf = train_classifier(x_train, train_df['Label'])
 
-    benchmark_classifier(clf, y_test, test_df, ['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'])
+    benchmark_classifier(clf, y_test, test_df['Label'], ['accuracy', 'precision_macro', 'recall_macro', 'f1_macro'])
 
 
 def predict(file_name):
+    """
+    Use the existing pickle files ('tfidf.pkl', 'nmf.pkl') to preprocess 'file_name' and then the pretrained
+    classifier ('classifier.pkl') to predict the label of the provided file.
+    Parameters
+    ----------
+    file_name : string
+        The relative path of the file to load.
+    """
     if os.path.exists(tfidf_pkl) and os.path.exists(nmf_pkl) and os.path.exists(classifier_pkl):
         tfidf = load_pickle(tfidf_pkl)
         model = load_pickle(nmf_pkl)
