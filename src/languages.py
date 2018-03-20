@@ -9,7 +9,7 @@ languages = ('Ada', 'AppleScript', 'AWK', 'BBC-BASIC', 'C', 'C++', 'C-sharp', 'C
 
 def load_keywords():
     """
-    Load the 'keywords.json' file and convert it to a dictionary.
+    Load `keywords.json` and convert it to a dictionary.
     Returns
     ----------
     dict
@@ -30,11 +30,11 @@ def strip_non_keywords(data, keywords, language):
     keywords : dict
         Dictionary containing keywords per language.
     language : string
-        Name of the language of the provided file. Used to find the language's keywords in the 'keywords' dictionary.
+        Name of the language of the provided file. Used to find the language's keywords in the `keywords` dictionary.
     Returns
     ----------
     string
-        The same string as 'data' but with all non keywords removed.
+        The same string as `data` but with all non keywords removed.
     Notes
     ----------
     If the list of keywords in the provided dictionary is empty, then no alphanumerics are removed at all and the

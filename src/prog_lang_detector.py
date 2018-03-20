@@ -36,18 +36,18 @@ def load_dataset(dataset_dir):
     Parameters
     ----------
     dataset_dir : string
-        The relative path of the dataset to load. Must be an existing directory and it must end with '/'.
+        The relative path of the dataset to load. Must be an existing directory and it must end with `/`.
     Returns
     -------
     Dataframe
-        Contains two columns named 'Source' and 'Label'
+        Contains two columns named `Source` and `Label`
     Notes
     -------
     Strips all alphanumerics that are not keywords.
 
     The files within the dataset folder must be inside directories, one per language.
 
-    If 'dataset.pkl' already exists, then will load it's content and return that instead.
+    If `dataset.pkl` already exists, it will load it's content and return that instead.
     """
     print('Loading dataset...')
     df = pd.DataFrame({'Source': [], 'Label': []})
@@ -91,11 +91,11 @@ def reduce_dimension(train_df, test_df):
         First array contains the features of the train dataset, second array of the test dataset.
     Notes
     -------
-    If 'train.pkl' and 'test.pkl' already exist, then will load their content and return those instead.
+    If `train.pkl` and `test.pkl` already exist, it will load their content and return those instead.
 
-    If 'tfidf.pkl' exists, then will load it and use that instead of fitting a new one.
+    If `tfidf.pkl` exists, it will load it and use that instead of fitting a new one.
 
-    If 'nmf.pkl' exists, then will load it and use that instead of fitting a new one.
+    If `nmf.pkl` exists, it will load it and use that instead of fitting a new one.
     """
     if os.path.exists(train_pkl) and os.path.exists(test_pkl):
         print('Loading truncated matrix...')
@@ -135,7 +135,7 @@ def reduce_dimension(train_df, test_df):
 
 def train_classifier(x_train, labels):
     """
-    Use the train data and the provided labels to train the RandomForestClassifier.
+    Use the train data and the provided labels to train the `RandomForestClassifier`.
     Parameters
     ----------
     x_train : array
@@ -146,7 +146,7 @@ def train_classifier(x_train, labels):
     RandomForestClassifier
     Notes
     -------
-    If 'classifier.pkl' exists, then will load it and use that instead of training a new classifier.
+    If `classifier.pkl` exists, it will load it and use that instead of training a new classifier.
     """
     if os.path.exists(classifier_pkl):
         print('Loading classifier...')
@@ -164,12 +164,12 @@ def benchmark_classifier(cls, y_test, labels, scoring):
     Use 10-fold cross validation to benchmark the performance of the provided classifier.
     Parameters
     ----------
-    cls : estimator object implementing 'fit'
+    cls : estimator object implementing `fit`
 
     y_test : array
 
     labels : list (of strings)
-        List containing the labels that match the elements of 'y_test'.
+        List containing the labels that match the elements of `y_test`.
 
     scoring : list (of strings)
     """
@@ -185,7 +185,7 @@ def train(dataset_dir):
     Parameters
     ----------
     dataset_dir : string
-        The relative path of the dataset to load. Must be an existing directory and it must end with '/'.
+        The relative path of the dataset to load. Must be an existing directory and it must end with `/`.
     """
     df = load_dataset(dataset_dir)
 
@@ -200,8 +200,8 @@ def train(dataset_dir):
 
 def predict(file_name):
     """
-    Use the existing pickle files ('tfidf.pkl', 'nmf.pkl') to preprocess 'file_name' and then the pretrained
-    classifier ('classifier.pkl') to predict the label of the provided file.
+    Use the existing pickle files (`tfidf.pkl`, `nmf.pkl`) to preprocess `file_name` and then the pretrained
+    classifier (`classifier.pkl`) to predict the label of the provided file.
     Parameters
     ----------
     file_name : string
