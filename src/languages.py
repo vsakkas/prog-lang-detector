@@ -14,7 +14,7 @@ def load_keywords():
     ----------
     dict
     """
-    with open('../keywords.json', 'r') as fd:
+    with open('keywords.json', 'r') as fd:
         data = fd.read()
         keywords = json.loads(data)
         return keywords
